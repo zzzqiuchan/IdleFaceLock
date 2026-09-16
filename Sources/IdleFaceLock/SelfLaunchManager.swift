@@ -3,7 +3,7 @@ import Foundation
 final class SelfLaunchManager: @unchecked Sendable {
     static let shared = SelfLaunchManager()
 
-    private let label = "com.idlefacelock.app"
+    private let label = "com.zzzqiuchan.idlefacelock"
 
     private var launchAgentURL: URL {
         FileManager.default.homeDirectoryForCurrentUser

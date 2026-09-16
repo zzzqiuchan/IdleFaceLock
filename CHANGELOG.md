@@ -6,7 +6,8 @@ All notable changes to IdleFaceLock are documented in this file.
 
 ### Added
 
-* Github workflow
+* new Github workflow
+* new Bundle ID
 
 ## [0.5.2] - 2026-09-16
 

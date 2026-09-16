@@ -143,7 +143,7 @@ IdleFaceLock 不通过模拟键盘输入、鼠标操作等方式实现锁定，�
 LaunchAgent：
 
 ```text
-~/Library/LaunchAgents/com.idlefacelock.app.plist
+~/Library/LaunchAgents/com.zzzqiuchan.idlefacelock.plist
 ```
 
 ## 外部程序兼容
@@ -227,7 +227,7 @@ yyyy-MM-dd HH:mm:ss.SSS
 可以使用：
 
 ```bash
-log stream --level debug --style compact --predicate 'subsystem == "com.idlefacelock.app"'
+log stream --level debug --style compact --predicate 'subsystem == "com.zzzqiuchan.idlefacelock"'
 ```
 
 查看实时日志。

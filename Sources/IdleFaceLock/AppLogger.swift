@@ -3,7 +3,7 @@ import OSLog
 
 enum AppLogger {
     private static let logger = Logger(
-        subsystem: "com.idlefacelock.app",
+        subsystem: "com.zzzqiuchan.idlefacelock",
         category: "main"
     )
 
@@ -12,9 +12,12 @@ enum AppLogger {
     )
 
     private static let logDirectoryURL: URL = {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        return home
-            .appendingPathComponent("Library", isDirectory: true)
+        let libraryURL = FileManager.default.urls(
+            for: .libraryDirectory,
+            in: .userDomainMask
+        ).first!
+
+        return libraryURL
             .appendingPathComponent("Logs", isDirectory: true)
             .appendingPathComponent("IdleFaceLock", isDirectory: true)
     }()
