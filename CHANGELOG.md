@@ -7,6 +7,7 @@ All notable changes to IdleFaceLock are documented in this file.
 ### Changed
 
 * delete some unnecessary log
+* adjust face frames threshold, set requiredFaceFrames = 2
 
 ## [0.5.3] - 2026-09-16
 

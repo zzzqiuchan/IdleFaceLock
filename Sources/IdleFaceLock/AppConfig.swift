@@ -10,7 +10,7 @@ enum AppConfig {
     static let cameraWarmupTime: TimeInterval = 0.15
     static let maxDetectionDuration: TimeInterval = 1.2
     static let maxDetectionFrames = 8
-    static let requiredFaceFrames = 3
+    static let requiredFaceFrames = 2
 
     static let cameraFailureCooldown: TimeInterval = 5 * 60
     static let recoverOnUserActivity = true
