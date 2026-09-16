@@ -2,6 +2,12 @@
 
 All notable changes to IdleFaceLock are documented in this file.
 
+## [0.5.2] - 2026-09-16
+
+### Added
+
+* Localizer: Chinese and English
+
 ## [0.5.1] - 2026-09-16
 
 ### Added

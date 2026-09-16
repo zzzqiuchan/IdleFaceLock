@@ -22,7 +22,7 @@ IdleFaceLock 的目标不是替代 macOS 自带的自动锁屏，而是提供一
 
 ---
 
-**当前版本：0.5.1**
+**当前版本：0.5.2**
 
 0.5 是当前的长期测试版本。如果你希望帮助测试，可以提交 Issue 或反馈实际使用中的问题。
 
@@ -227,7 +227,7 @@ yyyy-MM-dd HH:mm:ss.SSS
 可以使用：
 
 ```bash
-log stream --predicate 'subsystem == "com.idlefacelock.app"'
+log stream --level debug --style compact --predicate 'subsystem == "com.idlefacelock.app"'
 ```
 
 查看实时日志。
@@ -362,6 +362,7 @@ IdleFaceLock/
 │       ├── AppLogger.swift
 │       ├── CameraPresenceDetector.swift
 │       ├── IdleDetector.swift
+│       ├── Localizer.swift
 │       ├── PowerAssertion.swift
 │       ├── PowerAssertionMonitor.swift
 │       ├── ScreenLocker.swift

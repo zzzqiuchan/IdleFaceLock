@@ -58,9 +58,9 @@ enum AppLogger {
 
         switch level {
         case .info:
-            logger.info("\(line, privacy: .public)")
+            logger.info("\(message, privacy: .public)")
         case .error:
-            logger.error("\(line, privacy: .public)")
+            logger.error("\(message, privacy: .public)")
         }
 
         fileQueue.async {

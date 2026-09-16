@@ -26,7 +26,7 @@ final class StatusBarController {
         let menu = NSMenu()
 
         let enabledItem = NSMenuItem(
-            title: "自动锁定",
+            title: L.autoLock,
             action: #selector(toggleEnabled),
             keyEquivalent: ""
         )
@@ -35,7 +35,7 @@ final class StatusBarController {
         menu.addItem(enabledItem)
 
         let launchItem = NSMenuItem(
-            title: "登录时启动",
+            title: L.launchAtLogin,
             action: #selector(toggleLaunchAtLogin),
             keyEquivalent: ""
         )
@@ -47,7 +47,7 @@ final class StatusBarController {
         menu.addItem(.separator())
 
         let thresholdItem = NSMenuItem(
-            title: thresholdTitle(),
+            title: L.idleThreshold(Int(controller.currentIdleThreshold() / 60)),
             action: nil,
             keyEquivalent: ""
         )
@@ -56,7 +56,7 @@ final class StatusBarController {
 
         for seconds in AppConfig.availableIdleThresholds {
             let item = NSMenuItem(
-                title: "\(Int(seconds / 60)) 分钟",
+                title: L.idleTime(Int(seconds / 60)),
                 action: #selector(setThreshold),
                 keyEquivalent: ""
             )
@@ -76,7 +76,7 @@ final class StatusBarController {
         menu.addItem(thresholdItem)
 
         let checkItem = NSMenuItem(
-            title: "立即检测",
+            title: L.checkNow,
             action: #selector(checkNow),
             keyEquivalent: ""
         )
@@ -87,7 +87,7 @@ final class StatusBarController {
         menu.addItem(.separator())
 
         let lockSettingsItem = NSMenuItem(
-            title: "锁屏设置",
+            title: L.lockScreenSettings,
             action: #selector(openLockScreenSettings),
             keyEquivalent: ""
         )
@@ -95,7 +95,7 @@ final class StatusBarController {
         menu.addItem(lockSettingsItem)
 
         let aboutItem = NSMenuItem(
-            title: "关于 IdleFaceLock",
+            title: L.about,
             action: #selector(showAbout),
             keyEquivalent: ""
         )
@@ -103,7 +103,7 @@ final class StatusBarController {
         menu.addItem(aboutItem)
 
         let quitItem = NSMenuItem(
-            title: "退出",
+            title: L.quit,
             action: #selector(quit),
             keyEquivalent: "q"
         )
@@ -111,10 +111,6 @@ final class StatusBarController {
         menu.addItem(quitItem)
 
         statusItem.menu = menu
-    }
-
-    private func thresholdTitle() -> String {
-        "空闲 \(Int(controller.currentIdleThreshold() / 60)) 分钟"
     }
 
     @objc
@@ -138,10 +134,10 @@ final class StatusBarController {
 
                 if !manager.isCurrentProcessManaged {
                     let alert = NSAlert()
-                    alert.messageText = "登录时启动已开启"
-                    alert.informativeText = "IdleFaceLock 将重新启动一次，以便由系统在登录时自动启动。"
+                    alert.messageText = L.launchAtLoginEnabled
+                    alert.informativeText = L.launchAtLoginRestartMessage
                     alert.alertStyle = .informational
-                    alert.addButton(withTitle: "好")
+                    alert.addButton(withTitle: L.ok)
                     alert.runModal()
 
                     NSApp.terminate(nil)
@@ -154,10 +150,10 @@ final class StatusBarController {
             AppLogger.log("Failed to change login startup: \(error)")
 
             let alert = NSAlert()
-            alert.messageText = "操作失败"
+            alert.messageText = L.operationFailed
             alert.informativeText = error.localizedDescription
             alert.alertStyle = .warning
-            alert.addButton(withTitle: "好")
+            alert.addButton(withTitle: L.ok)
             alert.runModal()
         }
     }
@@ -200,21 +196,9 @@ final class StatusBarController {
 
         let alert = NSAlert()
         alert.messageText = "IdleFaceLock"
-        alert.informativeText = """
-        版本 \(version)
-
-        摄像头仅在空闲检测时短暂开启。
-        人脸检测在本机完成，不保存或上传图像。
-
-        锁定方式：
-        macOS Display Sleep
-
-        建议：
-        在“系统设置 → 锁定屏幕”中，将
-        “显示器关闭后要求输入密码”设置为“立即”。
-        """
+        alert.informativeText = L.aboutMessage(version: version)
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "好")
+        alert.addButton(withTitle: L.ok)
         alert.runModal()
     }
 
