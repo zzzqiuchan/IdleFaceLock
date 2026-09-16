@@ -17,7 +17,7 @@ cp -R "$APP_SOURCE" "$APP_DEST"
 
 echo
 echo "========================================"
-echo "IdleFaceLock 0.4.0 installed."
+echo "IdleFaceLock 0.5.3 installed."
 echo
 echo "Application:"
 echo "$APP_DEST"

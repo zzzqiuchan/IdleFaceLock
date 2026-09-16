@@ -284,7 +284,7 @@ pmset displaysleepnow
 
 IdleFaceLock 会识别这些情况并暂停自己的检测逻辑。
 
-### 4. 当前主要面向 Apple Silicon + macOS
+### 4. 当前主要面向现代 macOS 环境，提供 Apple Silicon 和 Intel 的 Universal 构建
 
 项目使用 macOS 原生：
 
@@ -322,6 +322,14 @@ chmod +x build-app.sh install.sh uninstall.sh
 安装后默认不会开启“登录时启动”。
 
 首次运行时，macOS 可能会请求摄像头权限。
+
+另外也可以执行
+```bash
+chmod +x build-universal-app.sh
+./build-universal-app.sh
+```
+构建出来 universal 的 app 。
+然后手动将`.build/IdleFaceLock.app` 拖到应用程序文件夹。
 
 ## 卸载
 
