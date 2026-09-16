@@ -322,13 +322,6 @@ final class AppController: @unchecked Sendable {
         if idle <= AppConfig.activityThreshold {
             logicalLastActivity = now
 
-            if externalAssertionPaused {
-                externalAssertionPaused = false
-                AppLogger.log(
-                    "User activity detected. Leaving external assertion pause."
-                )
-            }
-
             if waitingForUnlock {
                 AppLogger.log(
                     "User activity detected. Resuming monitoring."

@@ -2,6 +2,12 @@
 
 All notable changes to IdleFaceLock are documented in this file.
 
+## [0.5.4] - 2025-09-16
+
+### Changed
+
+* delete some unnecessary log
+
 ## [0.5.3] - 2026-09-16
 
 ### Added
