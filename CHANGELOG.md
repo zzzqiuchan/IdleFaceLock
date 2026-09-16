@@ -1,0 +1,68 @@
+# Changelog
+
+All notable changes to IdleFaceLock are documented in this file.
+
+## [0.5.1] - 2026-09-16
+
+### Added
+
+* detail README and CHANGELOG
+
+## [0.5.0] - 2026-09-16
+
+### Added
+
+* macOS menu bar application
+* Configurable idle detection threshold
+* Real HID idle time detection through `HIDIdleTime`
+* Local face detection using macOS Vision
+* Short-duration camera activation only when an idle check is triggered
+* Automatic camera shutdown immediately after detection
+* Safe mode when camera access or camera detection fails
+* Automatic lock action using `pmset displaysleepnow`
+* Detection of macOS screen lock and unlock state
+* Pause of monitoring while the session is locked
+* Detection of external display-sleep Power Assertions
+* Compatibility with applications such as IINA, VLC and `caffeinate`
+* Preservation of logical idle time when external display-sleep assertions are active
+* Sleep/wake handling
+* Optional login-at-startup support using `launchd`
+* Menu bar controls
+* Configurable idle thresholds like:
+  * 1 minute
+  * 3 minutes
+  * 5 minutes
+  * 10 minutes
+  * ...
+* Manual "立即检测" action
+* Rotating application log files
+* macOS Unified Logging support
+* Custom application icon
+
+### Privacy
+
+* Camera is normally off
+* Camera is activated only during presence detection
+* Face detection is performed locally using Vision
+* No photos are saved
+* No video is recorded or uploaded
+* No cloud-based face recognition service is required
+
+### Notes
+
+0.5.0 is intended as a long-term testing release.
+
+The current lock implementation requests macOS display sleep with:
+
+```bash
+pmset displaysleepnow
+```
+
+Users should configure macOS to require a password immediately after the display is turned off.
+
+### Known limitations
+
+* The current implementation relies on macOS display sleep rather than a documented public API for directly locking the current login session.
+* Camera detection requires macOS camera permission.
+* External applications can temporarily prevent display sleep using Power Assertions.
+* The project is currently developed and tested primarily on modern macOS systems and Apple Silicon Macs.
