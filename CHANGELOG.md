@@ -2,6 +2,12 @@
 
 All notable changes to IdleFaceLock are documented in this file.
 
+## [0.5.3] - 2026-09-16
+
+### Added
+
+* Github workflow
+
 ## [0.5.2] - 2026-09-16
 
 ### Added

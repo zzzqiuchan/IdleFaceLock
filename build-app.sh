@@ -24,11 +24,14 @@ echo "==> Creating app bundle"
 
 rm -rf "$APP_DIR"
 
-mkdir -p     "$APP_DIR/Contents/MacOS"     "$APP_DIR/Contents/Resources"
+mkdir -p \
+    "$APP_DIR/Contents/MacOS" \
+    "$APP_DIR/Contents/Resources"
 
-cp "$BINARY"     "$APP_DIR/Contents/MacOS/$APP_NAME"
+cp "$BINARY" \
+    "$APP_DIR/Contents/MacOS/$APP_NAME"
 
-cp "Resources/Info.plist"      "$APP_DIR/Contents/Info.plist"
+cp Resources/Info.plist        "$APP_DIR/Contents/Info.plist"
 cp Resources/IdleFaceLock.icns "$APP_DIR/Contents/Resources/IdleFaceLock.icns"
 
 chmod +x     "$APP_DIR/Contents/MacOS/$APP_NAME"
@@ -42,5 +45,5 @@ echo "Architecture:"
 file "$APP_DIR/Contents/MacOS/$APP_NAME"
 echo
 echo "Run:"
-echo "open "$APP_DIR""
+echo "open \"$APP_DIR\""
 echo "========================================"

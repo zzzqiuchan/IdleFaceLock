@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="dev-${GITHUB_SHA::7}"
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Build
+        run: |
+          chmod +x build-universal-app.sh
+          ./build-universal-app.sh
+
+      - name: Verify app
+        run: |
+          test -f ".build/IdleFaceLock.app/Contents/MacOS/IdleFaceLock"
+          test -f ".build/IdleFaceLock.app/Contents/Info.plist"
+          test -f ".build/IdleFaceLock.app/Contents/Resources/IdleFaceLock.icns"
+
+          file ".build/IdleFaceLock.app/Contents/MacOS/IdleFaceLock"
+
+      - name: Package
+        run: |
+          ditto -c -k --keepParent \
+            ".build/IdleFaceLock.app" \
+            "IdleFaceLock-${{ steps.version.outputs.version }}-universal.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IdleFaceLock-${{ steps.version.outputs.version }}
+          path: IdleFaceLock-${{ steps.version.outputs.version }}-universal.zip
+          if-no-files-found: error
