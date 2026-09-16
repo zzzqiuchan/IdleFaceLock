@@ -388,6 +388,6 @@ IdleFaceLock/
 
 ---
 
-**IdleFaceLock 0.5.0**
+**IdleFaceLock 0.5**
 
 一个尽量简单、尽量本地化的 macOS 自动锁定工具。
