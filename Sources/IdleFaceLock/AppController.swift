@@ -191,6 +191,11 @@ final class AppController: @unchecked Sendable {
             self.screenLocked = true
             self.checkingCamera = false
 
+            // Once the session is locked, stop preventing display sleep.
+            // The system should now handle display sleep according to its
+            // own Lock Screen / Energy settings.
+            self.powerAssertion.release()
+
             AppLogger.log("Screen locked. Monitoring paused.")
         }
     }

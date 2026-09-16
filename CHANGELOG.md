@@ -9,6 +9,10 @@ All notable changes to IdleFaceLock are documented in this file.
 * new Github workflow
 * new Bundle ID
 
+### Bugfix
+
+* screen not sleep, when manual lock
+
 ## [0.5.2] - 2026-09-16
 
 ### Added
