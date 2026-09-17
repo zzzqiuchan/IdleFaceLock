@@ -1,393 +1,159 @@
 # IdleFaceLock
 
-**人在电脑前，不因空闲而锁屏；离开后，在设定的时间内自动关闭屏幕。**
-**Stay unlocked while you're in front of your Mac. Turn off the screen automatically when you leave.**
+> English: [README.en.md](README.en.md)
 
-IdleFaceLock 是一个轻量的 macOS 小工具，通过 Mac 摄像头检测你是否仍然在电脑前。
+IdleFaceLock 是一个 macOS 菜单栏小工具。键盘鼠标长时间没动时，它会短暂打开摄像头看一眼你还在不在；如果没人，就关掉显示器并触发系统重新验证。
 
-IdleFaceLock is a lightweight macOS utility that uses your Mac's camera to detect whether you're still in front of the screen.
+它不是要取代 macOS 自带的自动锁屏，而是想做到「人在就继续，人走了才锁」。
 
-当你在电脑前时，即使一段时间没有操作键盘或鼠标，IdleFaceLock 也会阻止 macOS 因空闲而锁屏。当检测到你离开后，它会根据你设置的空闲时间自动关闭屏幕。
-
-When you're present, IdleFaceLock prevents macOS from locking the screen due to inactivity, even if you haven't touched the keyboard or mouse for a while. When you leave, it automatically turns off the screen after the idle time you configured.
-
-## 为什么需要它？ | Why?
-
-有时候你明明坐在 Mac 前，却没有操作键盘或鼠标——例如阅读文档、查看运行中的任务、等待程序完成，或者只是看着屏幕。
-
-Sometimes you're sitting in front of your Mac without touching the keyboard or mouse — reading a document, monitoring a running task, waiting for something to finish, or simply watching the screen.
-
-你不希望 Mac 因为一段时间没有操作而锁屏，但离开电脑后，又希望屏幕能够自动关闭。
-
-You don't want your Mac to lock just because you haven't interacted with it for a while, but you still want the screen to turn off automatically when you leave.
-
-**IdleFaceLock 就是为这个场景设计的。**
-**IdleFaceLock is designed for exactly this use case.**
-
-### 工作方式 | How it works
-
-```text
-你在电脑前
-You're in front of your Mac
-        ↓
-检测到人脸 / Presence detected
-        ↓
-阻止空闲锁屏
-Prevent idle lock
-        ↓
-你离开
-You leave
-        ↓
-未检测到人脸 / No presence detected
-        ↓
-等待你设置的空闲时间
-Wait for your configured idle time
-        ↓
-自动关闭屏幕
-Turn off the screen automatically
-```
-
-### 特点 | Features
-
-* 👤 **本地人脸检测 / Local presence detection**
-* 🔒 **人在时防止因空闲而锁屏 / Prevents idle locking while you're present**
-* 🖥️ **离开后按设定时间自动关闭屏幕 / Automatically turns off the screen after your configured idle time**
-* 🔐 **不进行身份识别 / No face recognition or identity matching**
-* 🌐 **无需云服务 / No cloud service required**
-* 🪶 **轻量、低资源占用 / Lightweight and unobtrusive**
-
-# IdleFaceLock 0.5
-
-> **长期测试版本**
-
-一个 macOS 菜单栏工具：**电脑长时间没有键盘/鼠标操作后，短暂使用摄像头确认用户是否仍在电脑前；如果检测不到人，则关闭显示器并触发系统重新验证。**
-
-IdleFaceLock 的目标不是替代 macOS 自带的自动锁屏，而是提供一种更接近“**人在电脑前就继续工作，人离开后再锁定**”的使用方式。
-
-### ✨ Features
-
-* 🖥️ macOS 原生菜单栏应用
-* ⏱️ 基于真实 HID 键盘/鼠标空闲时间
-* 📷 空闲后才短暂开启摄像头
-* 👤 使用 macOS Vision 本地检测人脸
-* 🔒 检测不到人后关闭显示器
-* 🛡️ 摄像头异常时安全退出，不强制锁定
-* ⏸️ 自动识别外部程序的显示器休眠阻止状态
-* 🔋 支持系统 Sleep / Wake
-* 🚀 可选 `launchd` 登录时启动
-* 📝 日志自动轮转
-* 🔐 不保存、不上传摄像头画面
-
----
-
-**当前版本：0.5.4**
-
-0.5 是当前的长期测试版本。如果你希望帮助测试，可以提交 Issue 或反馈实际使用中的问题。
+**当前版本 0.5.4（长期测试版）**，欢迎提 Issue 反馈使用中的问题。
 
 [Changelog](CHANGELOG.md) · [License](LICENSE)
 
+## 解决什么问题
+
+macOS 判断要不要锁屏，主要看你有没有动键盘鼠标。但有些时候你人就在屏幕前，只是没在操作：
+
+* 看长文档、会议内容
+* 等后台任务跑完
+* 盯着某个程序的运行状态
+
+这些情况下系统只看到「很久没输入」，就把屏幕锁了。IdleFaceLock 多加了一个判断条件——用摄像头确认一下有没有人。只有「既没有键鼠操作，摄像头也没看到人」时，才会关屏。
+
 ## 工作原理
 
-正常使用时：
+平时：
 
 * 摄像头完全关闭
-* 使用 macOS `HIDIdleTime` 判断真实的键盘/鼠标空闲时间
-* IdleFaceLock 使用 `PreventUserIdleDisplaySleep` 保持显示器处于唤醒状态
-* 系统本身的睡眠策略仍然由 macOS 控制
+* 用 macOS 的 `HIDIdleTime` 判断键鼠真实空闲时间
+* 通过 `PreventUserIdleDisplaySleep` 让显示器保持唤醒
+* 系统本身的睡眠策略仍由 macOS 控制
 
-达到设定的空闲时间后：
+到达你设置的空闲时间后，它会短暂打开前置摄像头，取几帧画面，用 macOS Vision 在本机做人脸检测，然后立刻关掉摄像头。结果分三种：
 
-1. 短暂打开前置摄像头
-2. 获取少量视频帧
-3. 使用 macOS Vision 在本机进行人脸检测
-4. 检测完成后立即关闭摄像头
+* **检测到人**：关闭摄像头，不关闭屏幕，重新开始计时
+* **没检测到人**：关闭摄像头，执行 `pmset displaysleepnow` 关屏
+* **摄像头检测失败**：进入安全模式，不关闭屏幕
 
-检测结果：
+检测到人会尽快结束；没检测到人时会在有限帧数内多试几次，减少偶发误判。
 
-* **检测到人**：不锁定，重新开始空闲计时
-* **未检测到人**：关闭摄像头，然后执行 `pmset displaysleepnow`
-* **摄像头检测失败**：进入安全模式，**不锁定**
+## 特点
 
-检测到人时会尽快结束检测；如果没有检测到人，则会在有限的帧数内继续尝试，以降低偶发误判的概率。
-
-## 为什么需要摄像头？
-
-macOS 的传统自动锁定主要基于“用户是否操作电脑”判断。
-
-但实际使用中可能出现：
-
-* 正在看视频，但没有操作键盘/鼠标
-* 阅读长文档
-* 开会或观看会议内容
-* 等待后台任务完成
-* 长时间观察某个程序运行状态
-
-这些情况下，用户可能仍然坐在电脑前，但系统看到的是“长时间没有输入”。
-
-IdleFaceLock 使用摄像头进行一次非常短暂的本地检测，将：
-
-> **“没有键盘/鼠标操作”**
-
-进一步判断为：
-
-> **“没有键盘/鼠标操作，并且摄像头没有检测到人”**
-
-因此只有在两个条件同时满足时才执行锁定动作。
+* 原生 macOS 菜单栏应用，轻量、占用低
+* 基于真实 HID 键鼠空闲时间，空闲后才开摄像头
+* 人脸检测用 macOS Vision 本地完成，只判断「有没有人」，不做身份识别
+* 不保存、不上传任何摄像头画面，不依赖云服务
+* 摄像头异常时安全退出，不会强制锁定
+* 能识别其他程序的「阻止休眠」状态并暂停自己
+* 支持系统睡眠 / 唤醒，可选登录时启动，日志自动轮转
 
 ## 摄像头权限
 
-程序启动时只处理一次摄像头权限：
+程序启动时只处理一次权限：
 
 * 已授权：直接启动
 * 未决定：启动时请求一次
-* 拒绝或受系统限制：进入安全模式
+* 拒绝或被系统限制：进入安全模式
 
-正常检测过程中不会反复弹出权限请求。
-
-如果之后在系统设置中重新允许摄像头，IdleFaceLock 后续检测可以自动恢复。
-
-IdleFaceLock 不会在正常运行期间持续占用摄像头。
+正常检测过程中不会反复弹权限请求。如果你之后在系统设置里重新允许，后续检测会自动恢复。程序不会在运行期间一直占用摄像头。
 
 ## 锁屏机制
 
-IdleFaceLock 当前使用：
+锁定动作用的是：
 
 ```bash
 pmset displaysleepnow
 ```
 
-作为锁定动作。
+也就是请求 macOS 关闭显示器，**关屏后要不要重新输密码，由 macOS 自己的安全设置决定**。
 
-也就是说，IdleFaceLock 请求 macOS 关闭显示器，而**是否需要重新输入密码由 macOS 自己的安全设置决定**。
+如果你希望关屏后必须重新验证身份，请在 **系统设置 → 锁定屏幕** 里，把 **显示器关闭后要求输入密码** 设为 **立即**。IdleFaceLock 不会替你改这个设置。
 
-为了确保显示器关闭后必须重新验证身份，请在：
+参考 [Apple 官方说明](https://support.apple.com/en-gb/guide/mac-help/mchlp2270/mac)
 
-**系统设置 → 锁定屏幕**
-
-将：
-
-**显示器关闭后要求输入密码**
-
-设置为：
-
-**立即**
-
-Apple 对相关设置的说明：
-
-https://support.apple.com/en-gb/guide/mac-help/mchlp2270/mac
-
-IdleFaceLock **不会修改**这个系统安全设置。
-
-### 注意
-
-IdleFaceLock 不通过模拟键盘输入、鼠标操作等方式实现锁定，也不需要 Accessibility 权限。
+它不靠模拟键鼠来锁屏，也不需要 Accessibility 权限。
 
 ## 登录时启动
 
-默认：
+默认关闭，可以在菜单栏里打开「登录时启动」。开启后由 macOS `launchd` 管理：登录后自动启动、异常退出后自动恢复、只在当前用户的 GUI session 里运行。
 
-**关闭**
-
-可以从菜单栏开启：
-
-**登录时启动**
-
-开启后使用 macOS `launchd` 管理：
-
-* 登录后自动启动
-* 异常退出后自动恢复
-* 仅在当前用户的 GUI session 中运行
-
-LaunchAgent：
+对应的 LaunchAgent：
 
 ```text
 ~/Library/LaunchAgents/com.zzzqiuchan.idlefacelock.plist
 ```
 
-## 外部程序兼容
+## 和其他程序的兼容
 
-如果其他程序正在阻止显示器休眠，IdleFaceLock 会暂停自己的空闲检测。
+如果有别的程序正在阻止显示器休眠（比如 IINA、VLC、`caffeinate`，或其他用 Power Assertion 的程序），IdleFaceLock 会暂停自己的检测，不会去开摄像头。
 
-例如：
-
-* IINA
-* VLC
-* `caffeinate`
-* 其他使用 macOS Power Assertion 的程序
-
-暂停期间不会因为 IdleFaceLock 自己的计时器达到阈值而启动摄像头检测。
-
-当外部 Power Assertion 消失后，会继续之前的**逻辑空闲计时**，而不是简单地从零开始计时。
-
-这样可以避免例如播放视频、执行临时任务或使用 `caffeinate` 时发生意外检测。
+等对方的 Power Assertion 消失后，它会接着之前的空闲计时继续，而不是从零重新计。这样播放视频、跑临时任务时就不会被误检测。
 
 ## 系统睡眠 / 唤醒
 
-系统真正进入 Sleep 时：
-
-* 释放 IdleFaceLock 自己的 Power Assertion
-* 暂停空闲检测
-* 不启动摄像头
-
-系统唤醒后：
-
-* 重新建立 Power Assertion
-* 恢复空闲监控
-
-如果 macOS session 已经处于锁定状态，IdleFaceLock 也会暂停摄像头检测。
+系统真正进入睡眠时，它会释放自己的 Power Assertion、暂停检测、不开摄像头。系统唤醒后重新建立 Power Assertion 并恢复监控。如果 session 已经处于锁定状态，也会暂停检测。
 
 ## 菜单
 
-当前菜单包括：
-
-* 自动锁定
+* 启用 IdleFaceLock
 * 登录时启动
-* 空闲时间：1 / 3 / 5 / 10 分钟
+* 空闲时间：1 / 3 / 5 / 10 / 15 / 20 / 30 / 45 / 60 分钟
 * 立即检测
 * 锁屏设置
 * 关于 IdleFaceLock
 * 退出
 
-### 空闲时间
-
-空闲时间基于真实 HID 输入空闲时间，而不是应用自己的计时器。
-
-例如设置为：
-
-```text
-5 分钟
-```
-
-表示键盘/鼠标连续 5 分钟没有产生用户输入后，进入一次人员检测。
+空闲时间基于真实 HID 输入。比如设成 5 分钟，就是键鼠连续 5 分钟没有输入后，做一次人脸检测。
 
 ## 日志
 
-日志位于：
+日志在：
 
 ```text
 ~/Library/Logs/IdleFaceLock/current.log
 ```
 
-日志带完整时间戳：
+带完整时间戳（`yyyy-MM-dd HH:mm:ss.SSS`），自动轮转：`current.log` 最大约 5 MB，最多保留 3 个历史文件，总量约 15 MB。
 
-```text
-yyyy-MM-dd HH:mm:ss.SSS
-```
-
-日志会自动轮转：
-
-* `current.log` 最大约 5 MB
-* 最多保留 3 个历史文件
-* 总量约 15 MB
-
-同时写入 macOS Unified Logging。
-
-可以使用：
+同时也写入 macOS Unified Logging，可以实时查看：
 
 ```bash
 log stream --level debug --style compact --predicate 'subsystem == "com.zzzqiuchan.idlefacelock"'
 ```
 
-查看实时日志。
-
 ## 隐私
 
-IdleFaceLock 的设计原则是：
+* 摄像头平时是关的，只有到了空闲检测条件才短暂打开
+* 人脸检测用 macOS Vision 在本机完成
+* 不上传画面、不存照片、不存视频、不依赖云端人脸识别
 
-* **摄像头平时关闭**
-* 只有达到空闲检测条件时才短暂开启摄像头
-* 人脸检测使用 macOS Vision 在本机执行
-* 不上传摄像头画面
-* 不保存照片
-* 不保存视频
-* 不依赖云端人脸识别服务
+摄像头只回答一个问题：**现在电脑前有没有人？** 检测完立刻关闭。
 
-摄像头的主要用途只是回答一个简单的问题：
+## 已知限制
 
-> **当前电脑前是否有人？**
-
-检测完成后立即关闭摄像头。
-
-## 当前限制
-
-### 1. 锁定动作依赖 macOS 的显示器休眠
-
-当前版本使用：
-
-```bash
-pmset displaysleepnow
-```
-
-触发显示器关闭，而不是调用一个公开的 macOS “立即锁定当前用户 Session” API。
-
-因此建议按照上面的说明，将 macOS：
-
-**显示器关闭后要求输入密码**
-
-设置为：
-
-**立即**
-
-### 2. 摄像头检测依赖系统摄像头权限
-
-如果用户拒绝摄像头权限，IdleFaceLock 不会绕过系统权限，也不会在权限异常时强制锁定。
-
-摄像头检测失败时采用：
-
-**安全优先 → 不锁定**
-
-### 3. 外部程序可能主动阻止显示器休眠
-
-例如视频播放器、`caffeinate` 或其他 Power Assertion。
-
-IdleFaceLock 会识别这些情况并暂停自己的检测逻辑。
-
-### 4. 当前主要面向现代 macOS 环境，提供 Apple Silicon 和 Intel 的 Universal 构建
-
-项目使用 macOS 原生：
-
-* Swift
-* AVFoundation
-* Vision
-* IOKit
-* AppKit
-* launchd
-
-目前主要针对现代 macOS 环境进行开发和测试。
+* **锁定依赖显示器休眠**：用的是 `pmset displaysleepnow` 关屏，而不是某个「立即锁定 Session」的公开 API，所以建议按上面说明把「显示器关闭后要求输入密码」设为立即。
+* **依赖系统摄像头权限**：如果你拒绝授权，程序不会绕过权限，也不会在权限异常时强制锁定，而是安全优先、不锁定。
+* **外部程序可能主动阻止休眠**：视频播放器、`caffeinate` 等，程序会识别并暂停自己的检测。
+* **主要面向现代 macOS**：提供 Apple Silicon 和 Intel 的 Universal 构建，主要在较新的 macOS 上开发和测试。
 
 ## 安装
 
-当前版本以源码方式提供。
-
-首先进入项目目录：
+目前以源码方式提供。进入项目目录后给脚本加执行权限并运行安装：
 
 ```bash
 cd IdleFaceLock
-```
-
-赋予脚本执行权限：
-
-```bash
 chmod +x build-app.sh install.sh uninstall.sh
-```
-
-执行安装：
-
-```bash
 ./install.sh
 ```
 
-安装后默认不会开启“登录时启动”。
+安装后默认不开启「登录时启动」，首次运行时 macOS 可能会请求摄像头权限。
 
-首次运行时，macOS 可能会请求摄像头权限。
+也可以构建 Universal 版本，再把 `.build/IdleFaceLock.app` 拖进「应用程序」文件夹：
 
-另外也可以执行
 ```bash
 chmod +x build-universal-app.sh
 ./build-universal-app.sh
 ```
-构建出来 universal 的 app 。
-然后手动将`.build/IdleFaceLock.app` 拖到应用程序文件夹。
 
 ## 卸载
 
@@ -399,13 +165,13 @@ chmod +x build-universal-app.sh
 
 ## 从源码构建
 
-项目使用 Swift Package Manager：
+项目用 Swift Package Manager：
 
 ```bash
 swift build -c release
 ```
 
-也可以直接使用项目提供的构建脚本：
+也可以直接用项目自带的构建脚本：
 
 ```bash
 ./build-app.sh
@@ -435,13 +201,14 @@ IdleFaceLock/
 │       ├── SelfLaunchManager.swift
 │       └── StatusBarController.swift
 ├── build-app.sh
+├── build-universal-app.sh
 ├── install.sh
 └── uninstall.sh
 ```
 
 ## 技术栈
 
-* **Swift**
+* **Swift** — 主要开发语言
 * **AppKit** — 菜单栏应用及 macOS UI
 * **AVFoundation** — 摄像头采集
 * **Vision** — 本地人脸检测
@@ -452,9 +219,3 @@ IdleFaceLock/
 ## License
 
 本项目采用 [MIT License](LICENSE)。
-
----
-
-**IdleFaceLock 0.5**
-
-一个尽量简单、尽量本地化的 macOS 自动锁定工具。
