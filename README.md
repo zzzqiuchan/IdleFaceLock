@@ -1,3 +1,61 @@
+# IdleFaceLock
+
+**人在电脑前，不因空闲而锁屏；离开后，在设定的时间内自动关闭屏幕。**
+**Stay unlocked while you're in front of your Mac. Turn off the screen automatically when you leave.**
+
+IdleFaceLock 是一个轻量的 macOS 小工具，通过 Mac 摄像头检测你是否仍然在电脑前。
+
+IdleFaceLock is a lightweight macOS utility that uses your Mac's camera to detect whether you're still in front of the screen.
+
+当你在电脑前时，即使一段时间没有操作键盘或鼠标，IdleFaceLock 也会阻止 macOS 因空闲而锁屏。当检测到你离开后，它会根据你设置的空闲时间自动关闭屏幕。
+
+When you're present, IdleFaceLock prevents macOS from locking the screen due to inactivity, even if you haven't touched the keyboard or mouse for a while. When you leave, it automatically turns off the screen after the idle time you configured.
+
+## 为什么需要它？ | Why?
+
+有时候你明明坐在 Mac 前，却没有操作键盘或鼠标——例如阅读文档、查看运行中的任务、等待程序完成，或者只是看着屏幕。
+
+Sometimes you're sitting in front of your Mac without touching the keyboard or mouse — reading a document, monitoring a running task, waiting for something to finish, or simply watching the screen.
+
+你不希望 Mac 因为一段时间没有操作而锁屏，但离开电脑后，又希望屏幕能够自动关闭。
+
+You don't want your Mac to lock just because you haven't interacted with it for a while, but you still want the screen to turn off automatically when you leave.
+
+**IdleFaceLock 就是为这个场景设计的。**
+**IdleFaceLock is designed for exactly this use case.**
+
+### 工作方式 | How it works
+
+```text
+你在电脑前
+You're in front of your Mac
+        ↓
+检测到人脸 / Presence detected
+        ↓
+阻止空闲锁屏
+Prevent idle lock
+        ↓
+你离开
+You leave
+        ↓
+未检测到人脸 / No presence detected
+        ↓
+等待你设置的空闲时间
+Wait for your configured idle time
+        ↓
+自动关闭屏幕
+Turn off the screen automatically
+```
+
+### 特点 | Features
+
+* 👤 **本地人脸检测 / Local presence detection**
+* 🔒 **人在时防止因空闲而锁屏 / Prevents idle locking while you're present**
+* 🖥️ **离开后按设定时间自动关闭屏幕 / Automatically turns off the screen after your configured idle time**
+* 🔐 **不进行身份识别 / No face recognition or identity matching**
+* 🌐 **无需云服务 / No cloud service required**
+* 🪶 **轻量、低资源占用 / Lightweight and unobtrusive**
+
 # IdleFaceLock 0.5
 
 > **长期测试版本**
