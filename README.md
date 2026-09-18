@@ -6,7 +6,7 @@ IdleFaceLock 是一个 macOS 菜单栏小工具。键盘鼠标长时间没动时
 
 它不是要取代 macOS 自带的自动锁屏，而是想做到「人在就继续，人走了才锁」。
 
-**当前版本 0.5.4（长期测试版）**，欢迎提 Issue 反馈使用中的问题。
+**当前版本 0.5.5（长期测试版）**，欢迎提 Issue 反馈使用中的问题。
 
 [Changelog](CHANGELOG.md) · [License](LICENSE)
 

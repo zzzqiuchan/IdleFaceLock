@@ -2,6 +2,12 @@
 
 All notable changes to IdleFaceLock are documented in this file.
 
+## [0.5.5] - 2025-09-18
+
+### Changed
+
+* try `VNDetectFaceRectanglesRequestRevision3` to optimize face detection logic
+
 ## [0.5.4] - 2025-09-16
 
 ### Changed

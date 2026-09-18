@@ -96,6 +96,16 @@ final class CameraPresenceDetector:
         }
 
         AppLogger.log("Camera ON")
+
+        let usingRevision3 = VNDetectFaceRectanglesRequest.supportedRevisions
+            .contains(VNDetectFaceRectanglesRequestRevision3)
+        AppLogger.log(
+            "Face detector revision:",
+            usingRevision3
+                ? "3 (tilt-tolerant)"
+                : "platform default (revision 3 unsupported)"
+        )
+
         session.startRunning()
 
         guard session.isRunning else {
@@ -216,6 +226,14 @@ final class CameraPresenceDetector:
                         : .absent
                 )
             }
+        }
+
+        // Prefer revision 3 (better tolerance for tilted / rotated heads),
+        // but fall back gracefully on systems that don't support it so the
+        // detector keeps working with the platform default revision.
+        if VNDetectFaceRectanglesRequest.supportedRevisions
+            .contains(VNDetectFaceRectanglesRequestRevision3) {
+            request.revision = VNDetectFaceRectanglesRequestRevision3
         }
 
         let handler = VNImageRequestHandler(
