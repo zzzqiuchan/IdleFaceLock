@@ -12,6 +12,12 @@ enum AppConfig {
     static let maxDetectionFrames = 8
     static let requiredFaceFrames = 2
 
+    // Minimum share of the frame a face must occupy to count as "sitting at
+    // the machine". Calibrated on my real hardware: sitting ~8%, leaning back
+    // ~3% (both present), standing behind a pulled-out chair ~1% (absent).
+    // 2% sits comfortably between leaning-back and standing.
+    static let minFaceAreaRatio: CGFloat = 0.02
+
     static let cameraFailureCooldown: TimeInterval = 5 * 60
     static let recoverOnUserActivity = true
 

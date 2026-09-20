@@ -202,14 +202,58 @@ final class CameraPresenceDetector:
             let faces = request.results as? [VNFaceObservation] ?? []
 
             if !faces.isEmpty {
-                self.faceFrameCount += 1
+                // boundingBox is normalized (0...1) relative to the oriented
+                // image, so its width/height are already the per-axis
+                // proportion of the frame. Multiply by the oriented pixel
+                // dimensions to recover an approximate size in pixels. The
+                // request uses .leftMirrored, so the oriented image swaps the
+                // buffer's width and height.
+                let orientedWidth = CVPixelBufferGetHeight(pixelBuffer)
+                let orientedHeight = CVPixelBufferGetWidth(pixelBuffer)
 
-                AppLogger.log(
-                    "Face detected: frame",
-                    self.frameCount,
-                    "face frames",
-                    self.faceFrameCount
-                )
+                for (index, face) in faces.enumerated() {
+                    let box = face.boundingBox
+                    AppLogger.log(
+                        String(
+                            format:
+                                "Face %d size: %.0fx%.0f px (%.1f%% x %.1f%% of frame), area %.1f%% of frame",
+                            index,
+                            box.width * CGFloat(orientedWidth),
+                            box.height * CGFloat(orientedHeight),
+                            box.width * 100,
+                            box.height * 100,
+                            box.width * box.height * 100
+                        )
+                    )
+                }
+
+                // Distance gate: only a face large enough to fill at least
+                // minFaceAreaRatio of the frame counts as present. This
+                // rejects someone standing further back or a passer-by in the
+                // background. Use the largest face so the nearest person decides.
+                let largestAreaRatio = faces
+                    .map { $0.boundingBox.width * $0.boundingBox.height }
+                    .max() ?? 0
+
+                if largestAreaRatio >= AppConfig.minFaceAreaRatio {
+                    self.faceFrameCount += 1
+                    AppLogger.log(
+                        "Face detected (near): frame",
+                        self.frameCount,
+                        "face frames",
+                        self.faceFrameCount
+                    )
+                } else {
+                    AppLogger.log(
+                        String(
+                            format:
+                                "Face too far: frame %d, largest area %.1f%% < %.1f%% threshold",
+                            self.frameCount,
+                            largestAreaRatio * 100,
+                            AppConfig.minFaceAreaRatio * 100
+                        )
+                    )
+                }
             } else {
                 AppLogger.log("No face: frame", self.frameCount)
             }
