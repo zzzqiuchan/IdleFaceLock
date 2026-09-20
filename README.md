@@ -172,7 +172,7 @@ chmod +x build-universal-app.sh
 cd "$(mktemp -d)" && curl -fL https://github.com/zzzqiuchan/IdleFaceLock/releases/latest/download/IdleFaceLock-universal.zip -o IdleFaceLock.zip && ditto -x -k IdleFaceLock.zip . && mkdir -p "$HOME/Applications" && rm -rf "$HOME/Applications/IdleFaceLock.app" && cp -R IdleFaceLock.app "$HOME/Applications/" && xattr -cr "$HOME/Applications/IdleFaceLock.app" && codesign --force --sign - "$HOME/Applications/IdleFaceLock.app" && tccutil reset Camera com.zzzqiuchan.idlefacelock && open "$HOME/Applications/IdleFaceLock.app"
 ```
 
-首次运行时 macOS 会请求摄像头权限，允许即可。
+首次运行时 macOS 会请求摄像头权限，允许即可（缺少摄像头权限会导致本工具无法正常工作）。
 
 #### 手动安装
 
