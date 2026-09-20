@@ -2,14 +2,14 @@
 set -e
 
 APP_NAME="IdleFaceLock"
-APP_DEST="/Applications/$APP_NAME.app"
-PLIST_PATH="$HOME/Library/LaunchAgents/com.zzzqiuchan.idlefacelock.plist"
+BUNDLE_ID="com.zzzqiuchan.idlefacelock"
+PLIST_PATH="$HOME/Library/LaunchAgents/$BUNDLE_ID.plist"
 
 UID_VALUE="$(id -u)"
 
 echo "==> Stopping LaunchAgent"
 
-launchctl bootout     "gui/$UID_VALUE/com.zzzqiuchan.idlefacelock"     2>/dev/null || true
+launchctl bootout     "gui/$UID_VALUE/$BUNDLE_ID"     2>/dev/null || true
 
 echo "==> Removing LaunchAgent"
 
@@ -17,7 +17,16 @@ rm -f "$PLIST_PATH"
 
 echo "==> Removing application"
 
-rm -rf "$APP_DEST"
+# Cover both install locations: install.sh uses /Applications, while the
+# one-line installer in the README installs to ~/Applications.
+rm -rf "/Applications/$APP_NAME.app"
+rm -rf "$HOME/Applications/$APP_NAME.app"
+
+echo "==> Resetting camera permission and preferences"
+
+tccutil reset Camera "$BUNDLE_ID" 2>/dev/null || true
+defaults delete "$BUNDLE_ID" 2>/dev/null || true
 
 echo
 echo "IdleFaceLock uninstalled."
+echo "Logs kept at ~/Library/Logs/IdleFaceLock/ (remove manually if you want)."
