@@ -226,7 +226,7 @@ final class CameraPresenceDetector:
                     AppLogger.log(
                         String(
                             format:
-                                "Face %d size: %.0fx%.0f px (%.1f%% x %.1f%% of frame), area %.1f%% of frame",
+                                "Face %d size: %.0fx%.0f px (%.1f%% x %.1f%% of frame), area %.2f%% of frame",
                             index,
                             box.width * CGFloat(orientedWidth),
                             box.height * CGFloat(orientedHeight),
@@ -257,7 +257,7 @@ final class CameraPresenceDetector:
                     AppLogger.log(
                         String(
                             format:
-                                "Face too far: frame %d, largest area %.1f%% < %.1f%% threshold",
+                                "Face too far: frame %d, largest area %.2f%% < %.2f%% threshold",
                             self.frameCount,
                             largestAreaRatio * 100,
                             AppConfig.minFaceAreaRatio * 100

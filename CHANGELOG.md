@@ -14,6 +14,7 @@ All notable changes to IdleFaceLock are documented in this file.
 * ad-hoc sign the app during the build so camera permission (TCC) works on downloaded copies
 * increase overall detection timeout to 2.0s to accommodate camera warmup/first-frame latency
 * uninstall.sh now removes the app from both /Applications and ~/Applications, and resets the camera permission and stored preferences
+* log face area with 2-decimal precision so borderline values near the threshold are no longer shown as a confusing "2.0% < 2.0%"
 * update Workflow
 * update README
 
