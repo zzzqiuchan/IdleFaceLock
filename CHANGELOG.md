@@ -10,6 +10,10 @@ All notable changes to IdleFaceLock are documented in this file.
 * update Workflow
 * update README
 
+### Bugfix
+
+* camera detection timeout with no analyzable frames is now treated as a failure (safe mode) instead of "no person", so a camera glitch no longer locks the screen
+
 ## [0.5.5] - 2025-09-18
 
 ### Changed

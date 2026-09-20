@@ -126,11 +126,21 @@ final class CameraPresenceDetector:
 
             AppLogger.log("Camera detection timeout")
 
-            self.finishDetection(
-                result: self.faceFrameCount >= AppConfig.requiredFaceFrames
-                    ? .present
-                    : .absent
-            )
+            if self.faceFrameCount >= AppConfig.requiredFaceFrames {
+                self.finishDetection(result: .present)
+            } else if self.frameCount < 2 {
+                // No frame was ever analyzed within the detection window
+                // (the first frame is skipped as warmup). The camera never
+                // delivered usable frames, so this is a camera/session
+                // failure, not a genuine "no person". Treat as failure so the
+                // app enters safe mode instead of locking the screen.
+                AppLogger.error(
+                    "Camera delivered no analyzable frames before timeout; treating as failure, not absence."
+                )
+                self.finishDetection(result: .failed)
+            } else {
+                self.finishDetection(result: .absent)
+            }
         }
 
         detectionTimer = timer
