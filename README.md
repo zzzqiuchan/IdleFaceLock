@@ -164,15 +164,28 @@ chmod +x build-universal-app.sh
 
 ### 下载安装
 
-从 [Releases](https://github.com/zzzqiuchan/IdleFaceLock/releases) 页面下载最新的 `IdleFaceLock-<版本>-universal.zip`，解压后把 `IdleFaceLock.app` 拖进「应用程序」文件夹。
+#### 一行命令安装（推荐）
 
-由于该 app 目前**未经过 Apple 签名和公证**，从网上下载后 macOS Gatekeeper 会默认拦截，首次打开可能提示「已损坏」或「无法验证开发者」。这不是程序损坏，是系统对未签名 app 的隔离机制。执行下面这条命令解除隔离即可（按实际安装路径调整）：
+复制下面这条命令到终端直接执行即可：它会下载最新版、安装到 `~/Applications`、清除隔离属性、重新 ad-hoc 签名、重置摄像头授权记录并打开。
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/IdleFaceLock.app
+cd "$(mktemp -d)" && curl -fL https://github.com/zzzqiuchan/IdleFaceLock/releases/latest/download/IdleFaceLock-universal.zip -o IdleFaceLock.zip && ditto -x -k IdleFaceLock.zip . && mkdir -p "$HOME/Applications" && rm -rf "$HOME/Applications/IdleFaceLock.app" && cp -R IdleFaceLock.app "$HOME/Applications/" && xattr -cr "$HOME/Applications/IdleFaceLock.app" && codesign --force --sign - "$HOME/Applications/IdleFaceLock.app" && tccutil reset Camera com.zzzqiuchan.idlefacelock && open "$HOME/Applications/IdleFaceLock.app"
 ```
 
-之后正常双击打开即可，首次运行时 macOS 可能会请求摄像头权限。
+首次运行时 macOS 会请求摄像头权限，允许即可。
+
+#### 手动安装
+
+也可以从 [Releases](https://github.com/zzzqiuchan/IdleFaceLock/releases) 页面下载最新的 `IdleFaceLock-universal.zip`，解压后把 `IdleFaceLock.app` 拖进「应用程序」文件夹，再执行下面两条命令（按实际安装路径调整）：
+
+```bash
+xattr -cr /Applications/IdleFaceLock.app
+codesign --force --sign - /Applications/IdleFaceLock.app
+```
+
+该 app 只经过 **ad-hoc 签名、未经 Apple 公证**，所以从网上下载后 macOS Gatekeeper 会默认拦截，首次打开可能提示「已损坏」或「无法验证开发者」。上面的 `xattr` 清除隔离属性、`codesign` 重新签名，是为了让摄像头授权（TCC）能正常工作——macOS 会把摄像头权限绑定到 app 的代码签名上，签名无效时授权会失败。之后正常双击打开即可。
+
+> 更新后若摄像头授权异常（每次构建的签名身份不同，旧授权记录会失效），单独执行 `tccutil reset Camera com.zzzqiuchan.idlefacelock` 再重新打开一次即可。
 
 ## 卸载
 

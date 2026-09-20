@@ -42,23 +42,24 @@ jobs:
           test -f ".build/IdleFaceLock.app/Contents/Resources/IdleFaceLock.icns"
 
           file ".build/IdleFaceLock.app/Contents/MacOS/IdleFaceLock"
+          codesign --verify --verbose ".build/IdleFaceLock.app"
 
       - name: Package
         run: |
           ditto -c -k --keepParent \
             ".build/IdleFaceLock.app" \
-            "IdleFaceLock-${{ steps.version.outputs.version }}-universal.zip"
+            "IdleFaceLock-universal.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: IdleFaceLock-${{ steps.version.outputs.version }}
-          path: IdleFaceLock-${{ steps.version.outputs.version }}-universal.zip
+          path: IdleFaceLock-universal.zip
           if-no-files-found: error
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: IdleFaceLock-${{ steps.version.outputs.version }}-universal.zip
+          files: IdleFaceLock-universal.zip
           generate_release_notes: true

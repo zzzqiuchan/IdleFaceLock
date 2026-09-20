@@ -51,6 +51,14 @@ cp Resources/IdleFaceLock.icns "$APP_DIR/Contents/Resources/IdleFaceLock.icns"
 
 chmod +x "$APP_DIR/Contents/MacOS/$APP_NAME"
 
+# Ad-hoc sign the app. `lipo -create` drops the per-slice signatures that
+# `swift build` produced, leaving the universal binary unsigned. macOS ties
+# camera/TCC grants to a valid code signature, so an unsigned app fails to get
+# camera permission. A stable ad-hoc signature is enough to make TCC work
+# (full Gatekeeper "just double-click" still needs Developer ID + notarization).
+echo "==> Ad-hoc signing"
+codesign --force --sign - "$APP_DIR"
+
 echo
 echo "========================================"
 echo "App created:"

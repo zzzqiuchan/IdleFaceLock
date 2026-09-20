@@ -4,9 +4,14 @@ All notable changes to IdleFaceLock are documented in this file.
 
 ## [0.5.6] - 2025-09-20
 
+### Added
+
+* publish the universal build to GitHub Releases, with a one-line download-and-install command in the README
+
 ### Changed
 
 * only count a face as present when it is close enough (area >= minFaceAreaRatio)
+* ad-hoc sign the app during the build so camera permission (TCC) works on downloaded copies
 * update Workflow
 * update README
 
