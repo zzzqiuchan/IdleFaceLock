@@ -8,7 +8,13 @@ enum AppConfig {
     static let activityThreshold: TimeInterval = 2
 
     static let cameraWarmupTime: TimeInterval = 0.15
-    static let maxDetectionDuration: TimeInterval = 1.2
+    // Overall detection budget, counted from camera start and therefore
+    // including warmup/first-frame latency. Observed first analyzable frame
+    // arrives ~1.4-1.7s after the camera turns on, so 1.2s was too tight and
+    // caused occasional "no frames" failures. When a person is present the
+    // check still ends as soon as requiredFaceFrames are seen, so this larger
+    // budget only affects the worst case (nobody / camera slow to stream).
+    static let maxDetectionDuration: TimeInterval = 2.0
     static let maxDetectionFrames = 8
     static let requiredFaceFrames = 2
 

@@ -12,6 +12,7 @@ All notable changes to IdleFaceLock are documented in this file.
 
 * only count a face as present when it is close enough (area >= minFaceAreaRatio)
 * ad-hoc sign the app during the build so camera permission (TCC) works on downloaded copies
+* increase overall detection timeout to 2.0s to accommodate camera warmup/first-frame latency
 * update Workflow
 * update README
 
