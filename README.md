@@ -143,7 +143,9 @@ log stream --level debug --style compact --predicate 'subsystem == "com.zzzqiuch
 
 ## 安装
 
-目前以源码方式提供。进入项目目录后给脚本加执行权限并运行安装：
+### 从源码安装
+
+进入项目目录后给脚本加执行权限并运行安装：
 
 ```bash
 cd IdleFaceLock
@@ -160,6 +162,18 @@ chmod +x build-universal-app.sh
 ./build-universal-app.sh
 ```
 
+### 下载安装
+
+从 [Releases](https://github.com/zzzqiuchan/IdleFaceLock/releases) 页面下载最新的 `IdleFaceLock-<版本>-universal.zip`，解压后把 `IdleFaceLock.app` 拖进「应用程序」文件夹。
+
+由于该 app 目前**未经过 Apple 签名和公证**，从网上下载后 macOS Gatekeeper 会默认拦截，首次打开可能提示「已损坏」或「无法验证开发者」。这不是程序损坏，是系统对未签名 app 的隔离机制。执行下面这条命令解除隔离即可（按实际安装路径调整）：
+
+```bash
+xattr -dr com.apple.quarantine /Applications/IdleFaceLock.app
+```
+
+之后正常双击打开即可，首次运行时 macOS 可能会请求摄像头权限。
+
 ## 卸载
 
 在项目目录执行：
@@ -167,6 +181,17 @@ chmod +x build-universal-app.sh
 ```bash
 ./uninstall.sh
 ```
+
+## 构建前提
+
+* macOS 13 或更新版本
+* 安装 Xcode Command Line Tools（已足够）：
+
+  ```bash
+  xcode-select --install
+  ```
+* 需要 Swift 6 工具链（即 Xcode 16 / CLT 16 及以上）
+* 安装了完整 Xcode 也可以，但不是必需
 
 ## 从源码构建
 

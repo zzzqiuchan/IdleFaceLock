@@ -7,6 +7,8 @@ All notable changes to IdleFaceLock are documented in this file.
 ### Changed
 
 * only count a face as present when it is close enough (area >= minFaceAreaRatio)
+* update Workflow
+* update README
 
 ## [0.5.5] - 2025-09-18
 
