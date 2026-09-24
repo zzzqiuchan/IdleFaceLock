@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import Vision
 import CoreMedia
+import QuartzCore
 
 final class CameraPresenceDetector:
     NSObject,
@@ -21,6 +22,14 @@ final class CameraPresenceDetector:
     private var frameCount = 0
     private var faceFrameCount = 0
     private var detectionTimer: DispatchWorkItem?
+    // Wall-clock time (monotonic, seconds) of the last analyzed frame, used to
+    // throttle sampling to AppConfig.minFrameInterval. nil until the warmup
+    // frame anchors the clock.
+    private var lastAnalyzedTime: CFTimeInterval?
+    // Whether the most recently analyzed frame contained a qualifying (near)
+    // face. Drives per-frame throttling: a hit means analyze the next frame
+    // immediately, a miss means wait minFrameInterval before the next.
+    private var lastAnalyzedHadFace = false
 
     // Called once during application startup.
     // This is the only place where requestAccess() is ever invoked.
@@ -81,6 +90,8 @@ final class CameraPresenceDetector:
         detectionFinished = false
         frameCount = 0
         faceFrameCount = 0
+        lastAnalyzedTime = nil
+        lastAnalyzedHadFace = false
 
         // No requestAccess() here. Permission was handled once at startup.
         guard AVCaptureDevice.authorizationStatus(for: .video) == .authorized else {
@@ -128,10 +139,10 @@ final class CameraPresenceDetector:
 
             if self.faceFrameCount >= AppConfig.requiredFaceFrames {
                 self.finishDetection(result: .present)
-            } else if self.frameCount < 2 {
+            } else if self.frameCount < 1 {
                 // No frame was ever analyzed within the detection window
-                // (the first frame is skipped as warmup). The camera never
-                // delivered usable frames, so this is a camera/session
+                // (the first delivered frame is skipped as warmup). The camera
+                // never delivered usable frames, so this is a camera/session
                 // failure, not a genuine "no person". Treat as failure so the
                 // app enters safe mode instead of locking the screen.
                 AppLogger.error(
@@ -247,6 +258,7 @@ final class CameraPresenceDetector:
 
                 if largestAreaRatio >= AppConfig.minFaceAreaRatio {
                     self.faceFrameCount += 1
+                    self.lastAnalyzedHadFace = true
                     AppLogger.log(
                         "Face detected (near): frame",
                         self.frameCount,
@@ -254,6 +266,7 @@ final class CameraPresenceDetector:
                         self.faceFrameCount
                     )
                 } else {
+                    self.lastAnalyzedHadFace = false
                     AppLogger.log(
                         String(
                             format:
@@ -265,6 +278,7 @@ final class CameraPresenceDetector:
                     )
                 }
             } else {
+                self.lastAnalyzedHadFace = false
                 AppLogger.log("No face: frame", self.frameCount)
             }
 
@@ -354,17 +368,39 @@ extension CameraPresenceDetector:
             return
         }
 
-        frameCount += 1
-
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             finishDetection(result: .failed)
             return
         }
 
-        if frameCount <= 1 {
+        // Monotonic wall clock; never NaN, unaffected by system clock changes,
+        // so it is a robust basis for spacing analyses.
+        let now = CACurrentMediaTime()
+
+        // The first delivered frame is warmup: it primes the capture pipeline
+        // and anchors the sampling clock, but is not analyzed.
+        guard let lastTime = lastAnalyzedTime else {
+            lastAnalyzedTime = now
             return
         }
 
+        // Per-frame throttling, decided from the previous analyzed frame:
+        //   - The first real frame is analyzed immediately (fast present path).
+        //   - If the last analyzed frame had a qualifying face, analyze this one
+        //     right away so presence is confirmed as fast as possible.
+        //   - Otherwise (last frame had no face) wait minFrameInterval. The
+        //     camera streams at ~30fps, so this spacing only kicks in while
+        //     nobody is detected, stretching the "no person" scan to ~0.5s and
+        //     giving the absence decision real temporal coverage.
+        let shouldAnalyze = frameCount == 0
+            || lastAnalyzedHadFace
+            || (now - lastTime) >= AppConfig.minFrameInterval
+        guard shouldAnalyze else {
+            return
+        }
+        lastAnalyzedTime = now
+
+        frameCount += 1
         detectFace(in: pixelBuffer)
     }
 }
