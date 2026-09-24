@@ -11,15 +11,18 @@ enum AppConfig {
     // Overall detection budget, counted from camera start and therefore
     // including warmup/first-frame latency. Observed first analyzable frame
     // arrives ~1.4-1.7s after the camera turns on, and analyzed frames are now
-    // spaced out over ~0.5s (see minFrameInterval), so the worst case is
-    // roughly 1.7s + 0.5s + Vision overhead. Budget must clear that or the
-    // timeout fires before all frames are sampled. When a person is present
-    // the check still ends as soon as requiredFaceFrames are seen, so this
-    // larger budget only affects the worst case (nobody / camera slow to stream).
-    static let maxDetectionDuration: TimeInterval = 2.7
+    // spaced out over ~1.5s (see minFrameInterval / maxDetectionFrames), so the
+    // worst case is roughly 1.7s + 1.5s + Vision overhead. Budget must clear
+    // that or the timeout fires before all frames are sampled. When a person is
+    // present the check still ends as soon as requiredFaceFrames are seen, so
+    // this larger budget only affects the worst case (nobody / camera slow to
+    // stream).
+    static let maxDetectionDuration: TimeInterval = 4.0
     // Number of frames actually analyzed (the first delivered frame is skipped
-    // as warmup, so total delivered frames = maxDetectionFrames + 1).
-    static let maxDetectionFrames = 8
+    // as warmup, so total delivered frames = maxDetectionFrames + 1). At the
+    // ~71ms/frame cadence set by minFrameInterval this spreads the "no person"
+    // scan over ~1.5s of real coverage.
+    static let maxDetectionFrames = 22
     static let requiredFaceFrames = 2
 
     // Minimum spacing applied after a frame that found no qualifying face. The
@@ -28,9 +31,9 @@ enum AppConfig {
     // instant. Throttling is decided per frame: after a miss, wait this long
     // before the next analysis; after a hit, analyze the next frame immediately
     // to confirm presence fast. The net effect is that a "no person" scan
-    // stretches to ~0.5s (real temporal coverage — catches a head briefly
-    // turned, a blink, or a transient miss) while a present person is confirmed
-    // back-to-back with no added delay.
+    // stretches over ~1.5s (real temporal coverage — catches a head turned
+    // away, a blink, or a transient miss for that long) while a present person
+    // is confirmed back-to-back with no added delay.
     static let minFrameInterval: TimeInterval = 0.06
 
     // Minimum share of the frame a face must occupy to count as "sitting at

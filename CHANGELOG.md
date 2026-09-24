@@ -7,6 +7,7 @@ All notable changes to IdleFaceLock are documented in this file.
 ### Changed
 
 * spread the presence check's face-detection frames over ~0.5s while nobody is detected (a present person is still confirmed immediately), and raise the detection timeout to 2.7s to fit it
+* further lengthen the "no person" scan from ~0.5s to ~1.5s (raise the timeout to 4.0s to fit it) so a briefly turned-away or occluded face is less likely to be mistaken for absence and lock the screen
 
 ## [0.5.6] - 2026-09-20
 
